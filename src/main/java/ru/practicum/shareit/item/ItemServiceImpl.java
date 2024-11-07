@@ -27,14 +27,14 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDtoOut> getItems(long userId) {
+    public List<ItemDtoOut> getItems(Long userId) {
         return itemRepository.findByUserId(userId).stream()
                 .map(itemMapper::mapItemToItemDtoOut)
                 .toList();
     }
 
     @Override
-    public ItemDtoOut addNewItem(long userId, ItemDtoIn itemDtoIn) {
+    public ItemDtoOut addNewItem(Long userId, ItemDtoIn itemDtoIn) {
         UserDtoOut users = userService.getUserById(userId);
         Item item = itemMapper.mapItemDtoInToItem(itemDtoIn);
         item.setOwner(userId);
@@ -42,13 +42,13 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public void deleteItem(long userId, long itemId) {
+    public void deleteItem(Long userId, Long itemId) {
         itemRepository.deleteByUserIdAndItemId(userId, itemId);
     }
 
     @Override
     public ItemDtoOut updateItem(Long userId, Long itemId, ItemDtoIn itemDtoIn) {
-        if (itemRepository.findById(itemId).getOwner() != userId) {
+        if (!itemRepository.findById(itemId).getOwner().equals(userId)) {
             throw new NotFoundException("У вас нет прав на внесение изменений!");
         }
         log.info("Проверка сервиса обновления Вещи - {}", itemDtoIn);

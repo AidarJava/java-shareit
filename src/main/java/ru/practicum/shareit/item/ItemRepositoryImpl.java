@@ -20,14 +20,14 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     @Override
-    public Item findById(long itemId) {
+    public Item findById(Long itemId) {
         return items.get(itemId);
     }
 
     @Override
-    public List<Item> findByUserId(long userId) {
+    public List<Item> findByUserId(Long userId) {
         return items.values().stream()
-                .filter(item -> item.getOwner() == userId)
+                .filter(item -> item.getOwner().equals(userId))
                 .toList();
     }
 
@@ -39,13 +39,11 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     @Override
-    public void deleteByUserIdAndItemId(long userId, long itemId) {
+    public void deleteByUserIdAndItemId(Long userId, Long itemId) {
         Optional<Item> filtering = findByUserId(userId).stream()
-                .filter(item -> item.getOwner() == userId && item.getId() == itemId)
+                .filter(item -> item.getOwner().equals(userId) && item.getId().equals(itemId))
                 .findFirst();
-        if (filtering.isPresent()) {
-            items.remove(filtering);
-        }
+        filtering.ifPresent(item -> items.remove(item.getId()));
     }
 
     @Override
@@ -71,7 +69,6 @@ public class ItemRepositoryImpl implements ItemRepository {
     @Override
     public List<Item> searchItems(Long userId, String text) {
         return items.values().stream()
-                //.filter(item->!item.getOwner().equals(userId))
                 .filter(item -> !text.isBlank() && item.getName().toLowerCase().contains(text.toLowerCase())
                         || !text.isBlank() && item.getDescription().toLowerCase().contains(text.toLowerCase()))
                 .filter(Item::getAvailable)

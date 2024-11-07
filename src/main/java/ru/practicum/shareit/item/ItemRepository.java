@@ -6,13 +6,13 @@ import java.util.List;
 
 public interface ItemRepository {
 
-    Item findById(long itemId);
+    Item findById(Long itemId);
 
-    List<Item> findByUserId(long userId);
+    List<Item> findByUserId(Long userId);
 
     Item save(Item item);
 
-    void deleteByUserIdAndItemId(long userId, long itemId);
+    void deleteByUserIdAndItemId(Long userId, Long itemId);
 
     Item updateItem(Item item);
 

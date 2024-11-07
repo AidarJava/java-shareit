@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface ItemService {
 
-    List<ItemDtoOut> getItems(long userId);
+    List<ItemDtoOut> getItems(Long userId);
 
-    ItemDtoOut addNewItem(long userId, ItemDtoIn itemDtoIn);
+    ItemDtoOut addNewItem(Long userId, ItemDtoIn itemDtoIn);
 
-    void deleteItem(long userId, long itemId);
+    void deleteItem(Long userId, Long itemId);
 
     ItemDtoOut updateItem(Long userId,Long itemId,ItemDtoIn itemDtoIn);
 
