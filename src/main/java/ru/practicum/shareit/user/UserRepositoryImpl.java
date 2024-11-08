@@ -1,8 +1,13 @@
 package ru.practicum.shareit.user;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exception.ConflictException;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.user.dto.UserDtoIn;
+import ru.practicum.shareit.user.dto.UserDtoOut;
+import ru.practicum.shareit.user.dto.UserMapper;
 
 
 import java.util.HashMap;
@@ -10,29 +15,36 @@ import java.util.List;
 
 @Repository
 public class UserRepositoryImpl implements UserRepository {
-    private static final HashMap<Long, User> users = new HashMap<>();
+    private final HashMap<Long, User> users = new HashMap<>();
+    private final UserMapper userMapper;
 
-    @Override
-    public List<User> findAll() {
-        return users.values().stream().toList();
+    public UserRepositoryImpl(UserMapper userMapper) {
+        this.userMapper = userMapper;
     }
 
     @Override
-    public User save(User user) {
+    public List<UserDtoOut> findAll() {
+        return users.values().stream().map(userMapper::mapUserToUserDtoOut).toList();
+    }
+
+    @Override
+    public UserDtoOut save(UserDtoIn userDtoIn) {
+        User user = userMapper.mapUserDtoInToUser(userDtoIn);
         checkConflictEmail(user);
         user.setId(findMaxUserId());
         users.put(findMaxUserId(), user);
-        return user;
+        return userMapper.mapUserToUserDtoOut(user);
     }
 
     @Override
-    public User getUserById(Long userId) {
+    public UserDtoOut getUserById(Long userId) {
         checkEmptyUser(userId);
-        return users.get(userId);
+        return userMapper.mapUserToUserDtoOut(users.get(userId));
     }
 
     @Override
-    public User updateUser(User user) {
+    public UserDtoOut updateUser(UserDtoIn userDtoIn) {
+        User user = userMapper.mapUserDtoInToUser(userDtoIn);
         checkEmptyUser(user.getId());
         User upUser = users.get(user.getId());
         if (user.getEmail() != null) {
@@ -43,17 +55,17 @@ public class UserRepositoryImpl implements UserRepository {
             upUser.setName(user.getName());
         }
         users.put(user.getId(), upUser);
-        return user;
+        return userMapper.mapUserToUserDtoOut(user);
     }
 
     @Override
-    public String deleteUserById(Long userId) {
+    public ResponseEntity<String> deleteUserById(Long userId) {
         checkEmptyUser(userId);
         users.remove(userId);
         if (!users.containsKey(userId)) {
-            return "Удаление прошло успешно!";
+            return ResponseEntity.ok("Удаление прошло успешно!");
         } else {
-            return "Ошибка удаления!";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Ошибка удаления!");
         }
     }
 

@@ -1,15 +1,19 @@
 package ru.practicum.shareit.user;
 
+import org.springframework.http.ResponseEntity;
+import ru.practicum.shareit.user.dto.UserDtoIn;
+import ru.practicum.shareit.user.dto.UserDtoOut;
+
 import java.util.List;
 
 public interface UserRepository {
-    List<User> findAll();
+    List<UserDtoOut> findAll();
 
-    User save(User user);
+    UserDtoOut save(UserDtoIn user);
 
-    User getUserById(Long userId);
+    UserDtoOut getUserById(Long userId);
 
-    User updateUser(User user);
+    UserDtoOut updateUser(UserDtoIn user);
 
-    String deleteUserById(Long userId);
+    ResponseEntity<String> deleteUserById(Long userId);
 }

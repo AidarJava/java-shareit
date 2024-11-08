@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDtoIn;
 import ru.practicum.shareit.user.dto.UserDtoOut;
@@ -42,7 +43,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
-    public String deleteUserById(@Positive @PathVariable("userId") Long userId) {
+    public ResponseEntity<String> deleteUserById(@Positive @PathVariable("userId") Long userId) {
         log.info("DELETE/ Проверка параметров запроса метода deleteUserById, userId - {}", userId);
         return userService.deleteUserById(userId);
     }

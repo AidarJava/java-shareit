@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class ItemDtoIn {
+    private Long id;
     private Long owner;
     private String url;
     @NotBlank

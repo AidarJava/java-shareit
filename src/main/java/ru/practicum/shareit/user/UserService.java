@@ -1,5 +1,6 @@
 package ru.practicum.shareit.user;
 
+import org.springframework.http.ResponseEntity;
 import ru.practicum.shareit.user.dto.UserDtoIn;
 import ru.practicum.shareit.user.dto.UserDtoOut;
 
@@ -14,5 +15,5 @@ interface UserService {
 
     UserDtoOut updateUser(Long userId, UserDtoIn userDtoIn);
 
-    String deleteUserById(Long userId);
+    ResponseEntity<String> deleteUserById(Long userId);
 }
