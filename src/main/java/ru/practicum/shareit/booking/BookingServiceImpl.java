@@ -50,8 +50,8 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingDtoOut bookingConformation(Long userId, Long booking_id, boolean approved) {
-        Booking booking = bookingRepository.findById(booking_id).orElseThrow(() -> new NotFoundException("Такого бронирования нет в базе!"));
+    public BookingDtoOut bookingConformation(Long userId, Long bookingId, boolean approved) {
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException("Такого бронирования нет в базе!"));
         if (!userId.equals(booking.getBooker().getId()) && !userId.equals(booking.getItem().getOwner())) {
             throw new NotValidOwner("Вы не можете подтвердить или отклонить запрос на бронирование!");
         }
@@ -69,8 +69,8 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingDtoOut checkBookingStatus(Long userId, Long booking_id) {
-        Booking booking = bookingRepository.findById(booking_id).orElseThrow(() -> new NotFoundException("Такого бронирования нет в базе!"));
+    public BookingDtoOut checkBookingStatus(Long userId, Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException("Такого бронирования нет в базе!"));
         if (!userId.equals(booking.getBooker().getId()) && !userId.equals(booking.getItem().getOwner())) {
             throw new NotValidOwner("У вас недостаточно прав!");
         }
