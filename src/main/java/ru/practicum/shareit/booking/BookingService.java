@@ -8,9 +8,9 @@ import java.util.List;
 public interface BookingService {
     BookingDtoOut addNewBooking(Long userId, BookingDtoIn booking);
 
-    BookingDtoOut bookingConformation(Long userId, Long booking_id, boolean approved);
+    BookingDtoOut bookingConformation(Long userId, Long bookingId, boolean approved);
 
-    BookingDtoOut checkBookingStatus(Long userId, Long booking_id);
+    BookingDtoOut checkBookingStatus(Long userId, Long bookingId);
 
     List<BookingDtoOut> findBookingsByUser(Long userId, String state);
 
