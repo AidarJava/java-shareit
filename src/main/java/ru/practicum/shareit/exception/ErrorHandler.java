@@ -29,4 +29,18 @@ public class ErrorHandler {
         log.error("Ошибка 409 {}", e.getMessage(), e);
         return new ErrorResponse("Ошибка 409 ", e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse notValidRequest(final NotValidRequestException e) {
+        log.error("Ошибка 400 {}", e.getMessage(), e);
+        return new ErrorResponse("Ошибка 400 ", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse notValidRequest(final ServerErrorException e) {
+        log.error("Ошибка 500 {}", e.getMessage(), e);
+        return new ErrorResponse("Ошибка 500 ", e.getMessage());
+    }
 }

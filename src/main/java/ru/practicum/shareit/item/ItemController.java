@@ -5,8 +5,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.ItemDtoIn;
-import ru.practicum.shareit.item.dto.ItemDtoOut;
+import ru.practicum.shareit.item.dto.*;
 
 import java.util.List;
 
@@ -31,8 +30,8 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDtoOut search(@Positive @RequestHeader("X-Sharer-User-Id") Long userId,
-                             @Positive @PathVariable Long itemId) {
+    public ItemDtoOutDate search(@Positive @RequestHeader("X-Sharer-User-Id") Long userId,
+                                 @Positive @PathVariable Long itemId) {
         log.info("GET/ Проверка параметров запроса метода search, userId - {} itemId - {} ", userId, itemId);
         return itemService.searchItemForAnyone(itemId);
     }
@@ -57,5 +56,13 @@ public class ItemController {
                            @Positive @PathVariable(name = "itemId") Long itemId) {
         log.info("DELETE/ Проверка параметров запроса метода deleteItem, userId - {}, itemId - {} ", userId, itemId);
         itemService.deleteItem(userId, itemId);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDtoOut addComment(@Positive @RequestHeader("X-Sharer-User-Id") Long userId,
+                                    @Positive @PathVariable(name = "itemId") Long itemId,
+                                    @Valid @RequestBody CommentDtoIn commentDtoIn) {
+        log.info("POST/ Проверка параметров запроса метода addComment, userId - {} ItemId - {} ", userId, itemId);
+        return itemService.addNewComments(userId, itemId, commentDtoIn);
     }
 }
