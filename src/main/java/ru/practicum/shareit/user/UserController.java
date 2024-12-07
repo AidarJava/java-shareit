@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDtoIn;
@@ -18,8 +19,11 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
+
     @GetMapping
+
     public List<UserDtoOut> getAllUsers() {
+        log.info("GET/ Проверка запроса метода getAllUsers");
         return userService.getAllUsers();
     }
 
@@ -30,6 +34,7 @@ public class UserController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public UserDtoOut saveUser(@Valid @RequestBody UserDtoIn userDtoIn) {
         log.info("POST/ Проверка параметров запроса метода saveUser, userDtoIn - {}", userDtoIn);
         return userService.saveUser(userDtoIn);

@@ -6,7 +6,7 @@ import ru.practicum.shareit.user.dto.UserDtoOut;
 
 import java.util.List;
 
-interface UserService {
+public interface UserService {
     List<UserDtoOut> getAllUsers();
 
     UserDtoOut saveUser(UserDtoIn userDtoIn);
