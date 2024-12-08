@@ -26,4 +26,5 @@ public class Item {
     @NotBlank
     private String description;
     private Boolean available;
+    private Long requestId;
 }

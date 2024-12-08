@@ -19,6 +19,7 @@ public class ItemMapper {
                 .name(itemDtoIn.getName())
                 .description(itemDtoIn.getDescription())
                 .available(itemDtoIn.getAvailable())
+                .requestId(itemDtoIn.getRequestId())
                 .build();
     }
 
@@ -42,6 +43,13 @@ public class ItemMapper {
                 .description(item.getDescription())
                 .available(item.getAvailable())
                 .comments(commentRepository.findAllByItemId(item.getId()).stream().map(Comment::getText).toList())
+                .build();
+    }
+    public ItemDtoRequest mapItemToItemDtoRequest(Item item) {
+        return ItemDtoRequest.builder()
+                .id(item.getId())
+                .owner(item.getOwner())
+                .name(item.getName())
                 .build();
     }
 }

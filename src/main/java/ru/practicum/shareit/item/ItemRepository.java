@@ -10,6 +10,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     List<Item> findAllByOwner(Long userId);
 
+    List<Item> findAllByRequestId(Long userId);
+
     void deleteByOwnerAndId(Long userId, Long itemId);
 
     @Query("select i from Item as i " +
