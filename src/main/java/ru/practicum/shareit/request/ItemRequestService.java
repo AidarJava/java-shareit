@@ -6,7 +6,7 @@ import ru.practicum.shareit.request.dto.ItemRequestDtoOut;
 import java.util.List;
 
 public interface ItemRequestService {
-    ItemRequestDtoOut addNewRequest(ItemRequestDtoIn itemRequestDtoIn);
+    ItemRequestDtoOut addNewRequest(Long userId, ItemRequestDtoIn itemRequestDtoIn);
 
     List<ItemRequestDtoOut> getAllYourselfRequests(Long userId);
 

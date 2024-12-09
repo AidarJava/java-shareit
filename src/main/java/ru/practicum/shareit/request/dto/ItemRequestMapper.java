@@ -1,5 +1,6 @@
 package ru.practicum.shareit.request.dto;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.dto.ItemDtoIn;
@@ -11,12 +12,14 @@ import ru.practicum.shareit.request.ItemRequest;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Component
 public class ItemRequestMapper {
-    ItemRepository itemRepository;
-    ItemMapper itemMapper;
+    private final ItemRepository itemRepository;
+    private final ItemMapper itemMapper;
     public ItemRequest mapItemRequestInToItemRequest(ItemRequestDtoIn itemRequestDtoIn) {
         return ItemRequest.builder()
+                .owner(itemRequestDtoIn.getOwner())
                 .description(itemRequestDtoIn.getDescription())
                 .created(itemRequestDtoIn.getCreated())
                 .build();

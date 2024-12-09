@@ -21,7 +21,6 @@ public class UserController {
 
 
     @GetMapping
-
     public List<UserDtoOut> getAllUsers() {
         log.info("GET/ Проверка запроса метода getAllUsers");
         return userService.getAllUsers();
@@ -34,7 +33,6 @@ public class UserController {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public UserDtoOut saveUser(@Valid @RequestBody UserDtoIn userDtoIn) {
         log.info("POST/ Проверка параметров запроса метода saveUser, userDtoIn - {}", userDtoIn);
         return userService.saveUser(userDtoIn);
