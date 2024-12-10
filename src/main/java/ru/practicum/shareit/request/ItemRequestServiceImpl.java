@@ -26,13 +26,13 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<ItemRequestDtoOut> getAllYourselfRequests(Long userId) {
-        return itemRequestRepository.findAllByOwner(userId).stream()
+        return itemRequestRepository.findAllByOwnerOrderByCreatedDesc(userId).stream()
                 .map(itemRequestMapper::mapItemRequestToItemRequestDtoOut).toList();
     }
 
     @Override
     public List<ItemRequestDtoOut> getAll() {
-        return itemRequestRepository.findAll().stream().map(itemRequestMapper::mapItemRequestToItemRequestDtoOut).toList();
+        return itemRequestRepository.findAllOrderByCreatedDesc().stream().map(itemRequestMapper::mapItemRequestToItemRequestDtoOut).toList();
     }
 
     @Override

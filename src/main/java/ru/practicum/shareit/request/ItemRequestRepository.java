@@ -6,5 +6,7 @@ import ru.practicum.shareit.request.dto.ItemRequestDtoOut;
 import java.util.List;
 
 public interface ItemRequestRepository extends JpaRepository<ItemRequest, Long> {
-    List<ItemRequest> findAllByOwner(Long userId);
+    List<ItemRequest> findAllByOwnerOrderByCreatedDesc(Long userId);
+
+    List<ItemRequest> findAllOrderByCreatedDesc();
 }
