@@ -32,7 +32,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<ItemRequestDtoOut> getAll() {
-        return itemRequestRepository.findAllOrderByCreatedDesc().stream().map(itemRequestMapper::mapItemRequestToItemRequestDtoOut).toList();
+        return itemRequestRepository.findAllByOrderByCreatedDesc().stream().map(itemRequestMapper::mapItemRequestToItemRequestDtoOut).toList();
     }
 
     @Override
