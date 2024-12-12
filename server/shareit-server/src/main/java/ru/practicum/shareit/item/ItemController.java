@@ -62,7 +62,7 @@ public class ItemController {
     public CommentDtoOut addComment(@Positive @RequestHeader("X-Sharer-User-Id") Long userId,
                                     @Positive @PathVariable(name = "itemId") Long itemId,
                                     @Valid @RequestBody CommentDtoIn commentDtoIn) {
-        log.info("POST/ Проверка параметров запроса метода addComment, userId - {} ItemId - {} ", userId, itemId);
+        log.info("POST/ Проверка параметров запроса метода addComment, userId - {} ItemId - {} comment {}", userId, itemId,commentDtoIn);
         return itemService.addNewComments(userId, itemId, commentDtoIn);
     }
 }

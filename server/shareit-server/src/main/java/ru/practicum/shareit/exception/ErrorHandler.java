@@ -1,6 +1,7 @@
 package ru.practicum.shareit.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -39,8 +40,15 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse notValidRequest(final ServerErrorException e) {
+    public ErrorResponse notValidRequestEx(final ServerErrorException e) {
         log.error("Ошибка 500 {}", e.getMessage(), e);
         return new ErrorResponse("Ошибка 500 ", e.getMessage());
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ResponseStatus(HttpStatus.CONFLICT) // HTTP 409 Conflict
+    public ErrorResponse handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+        log.error("Ошибка сохранения данных: {}", e.getMessage(),e);
+        return new ErrorResponse("Ошибка сохранения данных", e.getMessage());
     }
 }

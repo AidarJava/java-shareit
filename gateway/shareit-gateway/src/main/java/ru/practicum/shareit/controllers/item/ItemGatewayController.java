@@ -7,9 +7,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.server.ResponseStatusException;
+import reactor.core.publisher.Mono;
 import ru.practicum.shareit.controllers.booking.dto.BookingDtoOut;
 import ru.practicum.shareit.controllers.item.dto.*;
 import ru.practicum.shareit.controllers.user.dto.UserDtoOut;
@@ -25,62 +28,67 @@ public class ItemGatewayController {
     private final WebClient webClient;
 
     public ItemGatewayController(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.baseUrl("http://localhost:9090").build();
+        this.webClient =  webClientBuilder.baseUrl("http://localhost:9090")
+                .filter((request, next) -> next.exchange(request)
+                        .flatMap(response -> {
+                            if (response.statusCode().isError()) {
+                                return response.bodyToMono(String.class)
+                                        .flatMap(body -> {
+                                            return Mono.error(new ResponseStatusException(response.statusCode(), body));
+                                        });
+                            }
+                            return Mono.just(response);
+                        }))
+                .build();
     }
 
     @GetMapping
-    public List<ItemDtoOut> get(@Positive @RequestHeader("X-Sharer-User-Id") Long userId) {
+    public ResponseEntity<List<Object>> get(@Positive @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("GET/ Проверка параметров запроса метода get, userId - {}", userId);
         return webClient.get()
                 .uri("/items")
                 .header("X-Sharer-User-Id", userId.toString())
-                .retrieve()
-                .bodyToFlux(ItemDtoOut.class)
-                .collectList()
+                .exchangeToMono(response->response.toEntityList(Object.class))
                 .block();
     }
 
     @GetMapping("/search")
-    public List<ItemDtoOut> searchPrivate(@Positive @RequestHeader("X-Sharer-User-Id") Long userId,
+    public ResponseEntity<List<Object>> searchPrivate(@Positive @RequestHeader("X-Sharer-User-Id") Long userId,
                                           @RequestParam(name = "text") String text) {
         log.info("GET/ Проверка параметров запроса метода searchPrivate, userId - {} text - {} ", userId, text);
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder.path("/items/search")
                         .queryParam("text",text).build())
                 .header("X-Sharer-User-Id", userId.toString())
-                .retrieve()
-                .bodyToFlux(ItemDtoOut.class)
-                .collectList()
+                .exchangeToMono(response->response.toEntityList(Object.class))
                 .block();
     }
 
     @GetMapping("/{itemId}")
-    public ItemDtoOutDate search(@Positive @RequestHeader("X-Sharer-User-Id") Long userId,
+    public ResponseEntity<Object> search(@Positive @RequestHeader("X-Sharer-User-Id") Long userId,
                                  @Positive @PathVariable Long itemId) {
         log.info("GET/ Проверка параметров запроса метода search, userId - {} itemId - {} ", userId, itemId);
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder.path("items/{itemId}").build(itemId))
                 .header("X-Sharer-User-Id", userId.toString())
-                .retrieve()
-                .bodyToMono(ItemDtoOutDate.class)
+                .exchangeToMono(response->response.toEntity(Object.class))
                 .block();
     }
 
     @PostMapping
-    public ItemDtoOut add(@Positive @RequestHeader(value = "X-Sharer-User-Id") Long userId,
+    public ResponseEntity<Object> add(@Positive @RequestHeader(value = "X-Sharer-User-Id") Long userId,
                           @Valid @RequestBody ItemDtoIn itemDtoIn) {
         log.info("POST/ Проверка параметров запроса метода add, userId - {} ItemDtoIn - {} ", userId, itemDtoIn);
         return webClient.post()
                 .uri("/items")
                 .header("X-Sharer-User-Id", userId.toString())
                 .bodyValue(itemDtoIn)
-                .retrieve()
-                .bodyToMono(ItemDtoOut.class)
+                .exchangeToMono(response->response.toEntity(Object.class))
                 .block();
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDtoOut update(@Positive @RequestHeader("X-Sharer-User-Id") Long userId,
+    public ResponseEntity<Object> update(@Positive @RequestHeader("X-Sharer-User-Id") Long userId,
                              @Positive @PathVariable(name = "itemId") Long itemId,
                              @RequestBody ItemDtoIn itemDtoIn) {
         log.info("PATCH/ Проверка параметров запроса метода update, userId - {}, itemId - {},ItemDtoId - {}", userId, itemId, itemDtoIn);
@@ -88,8 +96,7 @@ public class ItemGatewayController {
                 .uri(uriBuilder -> uriBuilder.path("/items/{itemId}").build(itemId))
                 .header("X-Sharer-User-Id", userId.toString())
                 .bodyValue(itemDtoIn)
-                .retrieve()
-                .bodyToMono(ItemDtoOut.class)
+                .exchangeToMono(response->response.toEntity(Object.class))
                 .block();
     }
 
@@ -100,13 +107,12 @@ public class ItemGatewayController {
         webClient.delete()
                 .uri(uriBuilder -> uriBuilder.path("/items/{itemId}").build(itemId))
                 .header("X-Sharer-User-Id", userId.toString())
-                .retrieve()
-                .bodyToMono(Void.class)
+                .exchangeToMono(response->response.toEntity(Void.class))
                 .block();
     }
 
     @PostMapping("/{itemId}/comment")
-    public CommentDtoOut addComment(@Positive @RequestHeader("X-Sharer-User-Id") Long userId,
+    public ResponseEntity<Object> addComment(@Positive @RequestHeader("X-Sharer-User-Id") Long userId,
                                     @Positive @PathVariable(name = "itemId") Long itemId,
                                     @Valid @RequestBody CommentDtoIn commentDtoIn) {
         log.info("POST/ Проверка параметров запроса метода addComment, userId - {} ItemId - {} ", userId, itemId);
@@ -114,8 +120,7 @@ public class ItemGatewayController {
                 .uri(uriBuilder -> uriBuilder.path("/items/{itemId}/comment").build(itemId))
                 .header("X-Sharer-User-Id", userId.toString())
                 .bodyValue(commentDtoIn)
-                .retrieve()
-                .bodyToMono(CommentDtoOut.class)
+                .exchangeToMono(response->response.toEntity(Object.class))
                 .block();
     }
 }
