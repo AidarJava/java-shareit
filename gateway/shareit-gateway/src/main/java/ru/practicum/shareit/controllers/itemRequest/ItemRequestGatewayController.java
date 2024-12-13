@@ -1,26 +1,14 @@
 package ru.practicum.shareit.controllers.itemRequest;
 
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
-import ru.practicum.shareit.controllers.item.dto.ItemDtoIn;
 import ru.practicum.shareit.controllers.itemRequest.dto.ItemRequestDtoIn;
-import ru.practicum.shareit.controllers.itemRequest.dto.ItemRequestDtoOut;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @RestController
@@ -29,7 +17,7 @@ public class ItemRequestGatewayController {
     private final WebClient webClient;
 
     public ItemRequestGatewayController(WebClient.Builder webClientBuilder) {
-        this.webClient =  webClientBuilder.baseUrl("http://localhost:9090")
+        this.webClient = webClientBuilder.baseUrl("http://localhost:9090")
                 .filter((request, next) -> next.exchange(request)
                         .flatMap(response -> {
                             if (response.statusCode().isError()) {
@@ -45,13 +33,13 @@ public class ItemRequestGatewayController {
 
     @PostMapping
     public ResponseEntity<Object> addNewRequest(@RequestHeader("X-Sharer-User-Id") Long id,
-                                           @RequestBody ItemRequestDtoIn req) {
+                                                @RequestBody ItemRequestDtoIn req) {
         log.info("POST/ Проверка параметров запроса метода addNewRequest, ItemRequestDtoIn - {}", req);
         return webClient.post()
                 .uri("/requests")
                 .header("X-Sharer-User-Id", id.toString())
                 .bodyValue(req)
-                .exchangeToMono(response->response.toEntity(Object.class))
+                .exchangeToMono(response -> response.toEntity(Object.class))
                 .block();
     }
 
@@ -61,7 +49,7 @@ public class ItemRequestGatewayController {
         return webClient.get()
                 .uri("/requests")
                 .header("X-Sharer-User-Id", id.toString())
-                .exchangeToMono(response->response.toEntityList(Object.class))
+                .exchangeToMono(response -> response.toEntityList(Object.class))
                 .block();
     }
 
@@ -71,18 +59,18 @@ public class ItemRequestGatewayController {
         return webClient.get()
                 .uri("/requests/all")
                 .header("X-Sharer-User-Id", id.toString())
-                .exchangeToMono(response->response.toEntityList(Object.class))
+                .exchangeToMono(response -> response.toEntityList(Object.class))
                 .block();
     }
 
     @GetMapping("/{requestId}")
     public ResponseEntity<Object> getRequestById(@RequestHeader("X-Sharer-User-Id") Long id,
-                                            @PathVariable Long requestId) {
+                                                 @PathVariable Long requestId) {
         log.info("GET/ Проверка параметров запроса метода getRequestById, requestId - {}", requestId);
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder.path("/requests/{requestId}").build(requestId))
                 .header("X-Sharer-User-Id", id.toString())
-                .exchangeToMono(response->response.toEntity(Object.class))
+                .exchangeToMono(response -> response.toEntity(Object.class))
                 .block();
     }
 }

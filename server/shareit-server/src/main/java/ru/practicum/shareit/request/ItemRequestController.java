@@ -19,7 +19,7 @@ public class ItemRequestController {
     public ItemRequestDtoOut addNewRequest(@RequestHeader("X-Sharer-User-Id") Long id,
                                            @RequestBody ItemRequestDtoIn req) {
         log.info("POST/ Проверка параметров запроса метода addNewRequest, ItemRequestDtoIn - {}", req);
-        return itemRequestService.addNewRequest(id,req);
+        return itemRequestService.addNewRequest(id, req);
     }
 
     @GetMapping

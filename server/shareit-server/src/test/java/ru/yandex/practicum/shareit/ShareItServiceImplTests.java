@@ -7,15 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.ShareItServer;
-import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingServiceImpl;
-import ru.practicum.shareit.booking.Status;
 import ru.practicum.shareit.booking.dto.BookingDtoIn;
 import ru.practicum.shareit.booking.dto.BookingDtoOut;
 import ru.practicum.shareit.item.ItemServiceImpl;
 import ru.practicum.shareit.item.dto.ItemDtoIn;
 import ru.practicum.shareit.item.dto.ItemDtoOut;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.ItemRequestServiceImpl;
 import ru.practicum.shareit.request.dto.ItemRequestDtoIn;
 import ru.practicum.shareit.request.dto.ItemRequestDtoOut;
@@ -41,7 +38,7 @@ import static org.hamcrest.Matchers.notNullValue;
         //properties = "spring.datasource.url=jdbc:h2:mem:shareit;MODE=PostgreSQL;DB_CLOSE_DELAY=-1",
         properties = "spring.datasource.url=jdbc:postgresql://localhost:5433/shareit",
         webEnvironment = SpringBootTest.WebEnvironment.NONE)
-public class ShareitServiceImplTests {
+public class ShareItServiceImplTests {
     private final EntityManager entityManager;
     private final UserServiceImpl userService;
     private final ItemServiceImpl itemService;

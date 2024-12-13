@@ -11,17 +11,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.*;
 import ru.practicum.shareit.user.dto.UserDtoIn;
 import ru.practicum.shareit.user.dto.UserDtoOut;
-import ru.practicum.shareit.user.dto.UserMapper;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -30,7 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
-public class ShareitControllerTests {
+public class ShareItControllerTests {
     @Mock
     private UserService userService;
 
@@ -51,14 +47,15 @@ public class ShareitControllerTests {
                 .build();
         userDtoIn = new UserDtoIn();
         userDtoIn.setEmail("yandex@mail.com");
-               userDtoIn.setName("Роман");
+        userDtoIn.setName("Роман");
 
         userDtoOut = new UserDtoOut(
-                  1L,
+                1L,
                 "yandex@mail.com",
                 "Роман");
     }
-@SneakyThrows
+
+    @SneakyThrows
     @Test
     void saveNewUser() {
         when(userService.saveUser(any()))
@@ -74,27 +71,29 @@ public class ShareitControllerTests {
                 .andExpect(jsonPath("$.name", is(userDtoOut.getName())))
                 .andExpect(jsonPath("$.email", is(userDtoOut.getEmail())));
     }
-@SneakyThrows
-    @Test
-    void getUserById() {
-        Long userId=1L;
-        //UserDtoOut userDtoOut = new UserDtoOut(1,"john.doe@mail.com","John");
-        when(userService.getUserById(userId)).thenReturn(userDtoOut);
-                mvc.perform(get("/users/{userId}",userId))
-                        .andExpect(status().isOk())
-                        .andExpect(jsonPath("$.id", is(userDtoOut.getId()), Long.class))
-                        .andExpect(jsonPath("$.name", is(userDtoOut.getName())))
-                        .andExpect(jsonPath("$.email", is(userDtoOut.getEmail())));
-    }
+
     @SneakyThrows
     @Test
-    void saveUserCheckValidUser(){
+    void getUserById() {
+        Long userId = 1L;
+        //UserDtoOut userDtoOut = new UserDtoOut(1,"john.doe@mail.com","John");
+        when(userService.getUserById(userId)).thenReturn(userDtoOut);
+        mvc.perform(get("/users/{userId}", userId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(userDtoOut.getId()), Long.class))
+                .andExpect(jsonPath("$.name", is(userDtoOut.getName())))
+                .andExpect(jsonPath("$.email", is(userDtoOut.getEmail())));
+    }
+
+    @SneakyThrows
+    @Test
+    void saveUserCheckValidUser() {
         UserDtoIn user = new UserDtoIn();
         user.setEmail("jsghksjgf");
         user.setName("Коля");
         mvc.perform(post("/users")
-                .content(mapper.writeValueAsString(user))
-                .contentType(MediaType.APPLICATION_JSON))
+                        .content(mapper.writeValueAsString(user))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
         verify(userService, never()).saveUser(user);
     }

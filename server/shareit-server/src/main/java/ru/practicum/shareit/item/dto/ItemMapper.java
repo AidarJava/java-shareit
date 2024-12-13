@@ -45,6 +45,7 @@ public class ItemMapper {
                 .comments(commentRepository.findAllByItemId(item.getId()).stream().map(Comment::getText).toList())
                 .build();
     }
+
     public ItemDtoRequest mapItemToItemDtoRequest(Item item) {
         return ItemDtoRequest.builder()
                 .id(item.getId())

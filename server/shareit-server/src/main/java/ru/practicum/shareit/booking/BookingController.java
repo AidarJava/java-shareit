@@ -19,7 +19,7 @@ public class BookingController {
 
     @PostMapping
     public BookingDtoOut addNewBooking(@Positive @RequestHeader("X-Sharer-User-Id") Long userId,
-                                @Valid @RequestBody BookingDtoIn bookingDtoIn) {
+                                       @Valid @RequestBody BookingDtoIn bookingDtoIn) {
         log.info("POST/ Проверка параметров запроса метода addNewBooking, userId - {}", userId);
         return bookingService.addNewBooking(userId, bookingDtoIn);
     }
