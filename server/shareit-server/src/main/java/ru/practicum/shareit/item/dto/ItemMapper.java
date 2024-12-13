@@ -12,6 +12,10 @@ import ru.practicum.shareit.item.model.Item;
 public class ItemMapper {
     private final CommentRepository commentRepository;
 
+    public ItemMapper() {
+        this.commentRepository = null; // Для создания без аргументов
+    }
+
     public Item mapItemDtoInToItem(ItemDtoIn itemDtoIn) {
         return Item.builder()
                 .owner(itemDtoIn.getOwner())
