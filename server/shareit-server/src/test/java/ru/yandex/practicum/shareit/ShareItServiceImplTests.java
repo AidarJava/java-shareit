@@ -34,7 +34,9 @@ import static org.hamcrest.Matchers.notNullValue;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @SpringBootTest(
         classes = ShareItServer.class,
-        properties = "spring.datasource.url=jdbc:postgresql://localhost:5433/shareit",
+        //properties = "spring.datasource.url=jdbc:postgresql://localhost:5433/shareit",
+        //properties = "spring.datasource.url=jdbc:h2:mem:shareit;MODE=PostgreSQL;DB_CLOSE_DELAY=-1",
+        properties = "spring.config.activate.on-profile=test",
         webEnvironment = SpringBootTest.WebEnvironment.NONE)
 public class ShareItServiceImplTests {
     private final EntityManager entityManager;
