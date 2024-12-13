@@ -47,7 +47,6 @@ public class ShareItServiceImplTests {
     void testSaveUser() {
         UserDtoIn userDto = makeUserDto("some@email.com", "Пётр");
         UserDtoOut userDtoOut = userService.saveUser(userDto);
-        // entityManager.flush();
         TypedQuery<User> query = entityManager.createQuery("Select u from User u where u.email = :email", User.class);
         User user = query.setParameter("email", userDto.getEmail())
                 .getSingleResult();
@@ -68,7 +67,6 @@ public class ShareItServiceImplTests {
         UserDtoIn userDto = makeUserDto("some@email.com", "Пётр");
 
         UserDtoOut userDtoOut = userService.saveUser(userDto);
-        //entityManager.flush();
         TypedQuery<User> query = entityManager.createQuery("Select u from User u where u.email = :email", User.class);
         User user = query.setParameter("email", userDto.getEmail())
                 .getSingleResult();
@@ -77,7 +75,6 @@ public class ShareItServiceImplTests {
         assertThat(user.getEmail(), equalTo(userDto.getEmail()));
         ItemDtoIn itemDto = makeItemDto("Вещь", "Хорошее качество", false);
         ItemDtoOut itemDtoOut = itemService.addNewItem(user.getId(), itemDto);
-        // entityManager.flush();
         ItemDtoOut item = makeItemDtoOut(itemDtoOut.getId(), userDtoOut.getId(), null, "Вещь", "Хорошее качество", false);
         List<ItemDtoOut> userItems = itemService.getItems(user.getId());
         assertThat(userItems, notNullValue());
@@ -118,7 +115,6 @@ public class ShareItServiceImplTests {
         LocalDateTime end = LocalDateTime.parse(str2, formatter);
         BookingDtoIn bookingDto = makeBookingDto(start, end, itemDtoOut.getId());
         BookingDtoOut bookingDtoOut = bookingService.addNewBooking(userDtoOut2.getId(), bookingDto);
-        //entityManager.flush();
         assertThat(bookingService.findBookingsByUser(userDtoOut2.getId(), "ALL").getFirst(), equalTo(bookingDtoOut));
 
     }
@@ -137,7 +133,6 @@ public class ShareItServiceImplTests {
         UserDtoOut userDtoOut1 = userService.saveUser(userDto1);
         ItemRequestDtoIn itemRequestDtoIn = makeItemRequestDto("Нужна хорошая вещь");
         ItemRequestDtoOut itemDtoOut = itemRequestService.addNewRequest(userDtoOut1.getId(), itemRequestDtoIn);
-        // entityManager.flush();
         assertThat(itemRequestService.getAllYourselfRequests(userDtoOut1.getId()).getFirst(), equalTo(itemDtoOut));
 
     }

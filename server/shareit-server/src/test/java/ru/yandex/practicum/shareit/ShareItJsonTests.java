@@ -27,12 +27,7 @@ public class ShareItJsonTests {
     void testValidUserJson() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
-        String validJson = """
-                {
-                  "name": "Ваня",
-                  "email": "good@mail.com"
-                }
-                """;
+        String validJson = "{\"name\": \"Ваня\", \"email\": \"good@mail.com\"}";
         UserDtoIn userDtoIn = objectMapper.readValue(validJson, UserDtoIn.class);
         Set<ConstraintViolation<UserDtoIn>> violations = validator.validate(userDtoIn);
         assertTrue(violations.isEmpty(), "Ожидалось отсутсвие нарушений");
@@ -43,13 +38,7 @@ public class ShareItJsonTests {
     void testValidItemJson() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
-        String validJson = """
-                {
-                  "name": "Вещь",
-                  "description": "Описание вещи",
-                  "available": true
-                }
-                """;
+        String validJson = "{\"name\": \"Вещь\", \"description\": \"Описание вещи\", \"available\": true}";
         ItemDtoIn itemDtoIn = objectMapper.readValue(validJson, ItemDtoIn.class);
         Set<ConstraintViolation<ItemDtoIn>> violations = validator.validate(itemDtoIn);
         assertTrue(violations.isEmpty(), "Ожидалось отсутсвие нарушений");
