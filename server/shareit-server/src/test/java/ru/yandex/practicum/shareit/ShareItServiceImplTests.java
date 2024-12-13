@@ -31,11 +31,9 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
 @Transactional
-//@Rollback(false)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @SpringBootTest(
         classes = ShareItServer.class,
-        //properties = "spring.datasource.url=jdbc:h2:mem:shareit;MODE=PostgreSQL;DB_CLOSE_DELAY=-1",
         properties = "spring.datasource.url=jdbc:postgresql://localhost:5433/shareit",
         webEnvironment = SpringBootTest.WebEnvironment.NONE)
 public class ShareItServiceImplTests {
