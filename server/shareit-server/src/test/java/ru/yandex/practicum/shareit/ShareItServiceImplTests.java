@@ -46,8 +46,8 @@ public class ShareItServiceImplTests {
     @Test
     void testSaveUser() {
         UserDtoIn userDto = makeUserDto("some@email.com", "Пётр");
-        UserDtoOut userDtoOut=userService.saveUser(userDto);
-       // entityManager.flush();
+        UserDtoOut userDtoOut = userService.saveUser(userDto);
+        // entityManager.flush();
         TypedQuery<User> query = entityManager.createQuery("Select u from User u where u.email = :email", User.class);
         User user = query.setParameter("email", userDto.getEmail())
                 .getSingleResult();
@@ -62,11 +62,12 @@ public class ShareItServiceImplTests {
         dto.setName(name);
         return dto;
     }
+
     @Test
     void testGetUserItems() {
         UserDtoIn userDto = makeUserDto("some@email.com", "Пётр");
 
-        UserDtoOut userDtoOut=userService.saveUser(userDto);
+        UserDtoOut userDtoOut = userService.saveUser(userDto);
         //entityManager.flush();
         TypedQuery<User> query = entityManager.createQuery("Select u from User u where u.email = :email", User.class);
         User user = query.setParameter("email", userDto.getEmail())
@@ -74,10 +75,10 @@ public class ShareItServiceImplTests {
         assertThat(user.getId(), notNullValue());
         assertThat(user.getName(), equalTo(userDto.getName()));
         assertThat(user.getEmail(), equalTo(userDto.getEmail()));
-        ItemDtoIn itemDto = makeItemDto("Вещь", "Хорошее качество",false);
-        ItemDtoOut itemDtoOut=itemService.addNewItem(user.getId(),itemDto);
-       // entityManager.flush();
-        ItemDtoOut item = makeItemDtoOut(itemDtoOut.getId(),userDtoOut.getId(),null,"Вещь", "Хорошее качество",false);
+        ItemDtoIn itemDto = makeItemDto("Вещь", "Хорошее качество", false);
+        ItemDtoOut itemDtoOut = itemService.addNewItem(user.getId(), itemDto);
+        // entityManager.flush();
+        ItemDtoOut item = makeItemDtoOut(itemDtoOut.getId(), userDtoOut.getId(), null, "Вещь", "Хорошее качество", false);
         List<ItemDtoOut> userItems = itemService.getItems(user.getId());
         assertThat(userItems, notNullValue());
         assertThat(userItems.getFirst(), equalTo(item));
@@ -90,7 +91,8 @@ public class ShareItServiceImplTests {
         dto.setAvailable(avaliable);
         return dto;
     }
-    private ItemDtoOut makeItemDtoOut(Long id,Long owner,String uri,String name, String decription, boolean avaliable) {
+
+    private ItemDtoOut makeItemDtoOut(Long id, Long owner, String uri, String name, String decription, boolean avaliable) {
         ItemDtoOut dtoOut = new ItemDtoOut();
         dtoOut.setId(id);
         dtoOut.setOwner(owner);
@@ -100,25 +102,27 @@ public class ShareItServiceImplTests {
         dtoOut.setAvailable(avaliable);
         return dtoOut;
     }
+
     @Test
     void testBookingsByUser() {
         UserDtoIn userDto1 = makeUserDto("some@email.com", "Пётр");
-        UserDtoOut userDtoOut1=userService.saveUser(userDto1);
+        UserDtoOut userDtoOut1 = userService.saveUser(userDto1);
         UserDtoIn userDto2 = makeUserDto("new@email.com", "Ваня");
-        UserDtoOut userDtoOut2=userService.saveUser(userDto2);
-        ItemDtoIn itemDto = makeItemDto("Вещь", "Хорошее качество",true);
-        ItemDtoOut itemDtoOut=itemService.addNewItem(userDtoOut1.getId(),itemDto);
+        UserDtoOut userDtoOut2 = userService.saveUser(userDto2);
+        ItemDtoIn itemDto = makeItemDto("Вещь", "Хорошее качество", true);
+        ItemDtoOut itemDtoOut = itemService.addNewItem(userDtoOut1.getId(), itemDto);
         String str1 = "2025-04-08 12:30";
         String str2 = "2026-04-08 12:30";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime start = LocalDateTime.parse(str1, formatter);
         LocalDateTime end = LocalDateTime.parse(str2, formatter);
-        BookingDtoIn bookingDto = makeBookingDto(start, end,itemDtoOut.getId());
-        BookingDtoOut bookingDtoOut=bookingService.addNewBooking(userDtoOut2.getId(),bookingDto);
+        BookingDtoIn bookingDto = makeBookingDto(start, end, itemDtoOut.getId());
+        BookingDtoOut bookingDtoOut = bookingService.addNewBooking(userDtoOut2.getId(), bookingDto);
         //entityManager.flush();
-        assertThat(bookingService.findBookingsByUser(userDtoOut2.getId(),"ALL").getFirst(), equalTo(bookingDtoOut));
+        assertThat(bookingService.findBookingsByUser(userDtoOut2.getId(), "ALL").getFirst(), equalTo(bookingDtoOut));
 
     }
+
     private BookingDtoIn makeBookingDto(LocalDateTime start, LocalDateTime end, Long itemId) {
         BookingDtoIn dto = new BookingDtoIn();
         dto.setStart(start);
@@ -126,16 +130,18 @@ public class ShareItServiceImplTests {
         dto.setItemId(itemId);
         return dto;
     }
+
     @Test
     void testItemRequest() {
         UserDtoIn userDto1 = makeUserDto("some@email.com", "Пётр");
-        UserDtoOut userDtoOut1=userService.saveUser(userDto1);
+        UserDtoOut userDtoOut1 = userService.saveUser(userDto1);
         ItemRequestDtoIn itemRequestDtoIn = makeItemRequestDto("Нужна хорошая вещь");
-        ItemRequestDtoOut itemDtoOut=itemRequestService.addNewRequest(userDtoOut1.getId(),itemRequestDtoIn);
+        ItemRequestDtoOut itemDtoOut = itemRequestService.addNewRequest(userDtoOut1.getId(), itemRequestDtoIn);
         // entityManager.flush();
         assertThat(itemRequestService.getAllYourselfRequests(userDtoOut1.getId()).getFirst(), equalTo(itemDtoOut));
 
     }
+
     private ItemRequestDtoIn makeItemRequestDto(String description) {
         ItemRequestDtoIn dto = new ItemRequestDtoIn();
         dto.setDescription(description);
