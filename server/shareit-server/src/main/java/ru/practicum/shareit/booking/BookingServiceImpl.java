@@ -105,8 +105,7 @@ public class BookingServiceImpl implements BookingService {
         return switch (state) {
             case "ALL" ->
                     bookingRepository.searchAllBookingsByUserItems(userId, itemRepository.findAllByOwner(userId)).stream()
-                            .map(bookingMapper::mapBookingToBookingDtoOut)
-                            .toList();
+                            .map(bookingMapper::mapBookingToBookingDtoOut).toList();
             case "CURRENT" ->
                     bookingRepository.searchAllCurrentBookingsByUserItems(userId, LocalDateTime.now(), itemRepository.findAllByOwner(userId)).stream()
                             .map(bookingMapper::mapBookingToBookingDtoOut).toList();

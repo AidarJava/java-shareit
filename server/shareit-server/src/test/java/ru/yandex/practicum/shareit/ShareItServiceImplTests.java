@@ -11,6 +11,7 @@ import ru.practicum.shareit.ShareItServer;
 import ru.practicum.shareit.booking.BookingServiceImpl;
 import ru.practicum.shareit.booking.dto.BookingDtoIn;
 import ru.practicum.shareit.booking.dto.BookingDtoOut;
+import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.ItemServiceImpl;
 import ru.practicum.shareit.item.dto.ItemDtoIn;
 import ru.practicum.shareit.item.dto.ItemDtoOut;
@@ -46,6 +47,7 @@ public class ShareItServiceImplTests {
     private final ItemServiceImpl itemService;
     private final BookingServiceImpl bookingService;
     private final ItemRequestServiceImpl itemRequestService;
+    private final ItemRepository itemRepository;
 
     @Test
     void testSaveUser() {
@@ -105,7 +107,7 @@ public class ShareItServiceImplTests {
     }
 
     @Test
-    void testBookingsByUser() {
+    void testBookingsByUserAll() {
         UserDtoIn userDto1 = makeUserDto("some@email.com", "Пётр");
         UserDtoOut userDtoOut1 = userService.saveUser(userDto1);
         UserDtoIn userDto2 = makeUserDto("new@email.com", "Ваня");
@@ -120,6 +122,69 @@ public class ShareItServiceImplTests {
         BookingDtoIn bookingDto = makeBookingDto(start, end, itemDtoOut.getId());
         BookingDtoOut bookingDtoOut = bookingService.addNewBooking(userDtoOut2.getId(), bookingDto);
         assertThat(bookingService.findBookingsByUser(userDtoOut2.getId(), "ALL").getFirst(), equalTo(bookingDtoOut));
+        System.out.println(userDtoOut1.getId());
+        System.out.println(itemDtoOut);
+        System.out.println(bookingDtoOut);
+        System.out.println(itemRepository.findAllByOwner(userDtoOut1.getId()));
+        System.out.println(bookingService.findBookingItemsByUser(userDtoOut1.getId(), "ALL"));
+        //assertThat(bookingService.findBookingItemsByUser(userDtoOut1.getId(), "ALL").getFirst(), equalTo(bookingDtoOut));
+    }
+
+    @Test
+    void testBookingsByUserCurrent() {
+        UserDtoIn userDto1 = makeUserDto("some@email.com", "Пётр");
+        UserDtoOut userDtoOut1 = userService.saveUser(userDto1);
+        UserDtoIn userDto2 = makeUserDto("new@email.com", "Ваня");
+        UserDtoOut userDtoOut2 = userService.saveUser(userDto2);
+        ItemDtoIn itemDto = makeItemDto("Вещь", "Хорошее качество", true);
+        ItemDtoOut itemDtoOut = itemService.addNewItem(userDtoOut1.getId(), itemDto);
+        String str1 = "2020-04-08 12:30";
+        String str2 = "2026-04-08 12:30";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime start = LocalDateTime.parse(str1, formatter);
+        LocalDateTime end = LocalDateTime.parse(str2, formatter);
+        BookingDtoIn bookingDto = makeBookingDto(start, end, itemDtoOut.getId());
+        BookingDtoOut bookingDtoOut = bookingService.addNewBooking(userDtoOut2.getId(), bookingDto);
+        assertThat(bookingService.findBookingsByUser(userDtoOut2.getId(), "CURRENT").getFirst(), equalTo(bookingDtoOut));
+
+    }
+
+    @Test
+    void testBookingsByUserPast() {
+        UserDtoIn userDto1 = makeUserDto("some@email.com", "Пётр");
+        UserDtoOut userDtoOut1 = userService.saveUser(userDto1);
+        UserDtoIn userDto2 = makeUserDto("new@email.com", "Ваня");
+        UserDtoOut userDtoOut2 = userService.saveUser(userDto2);
+        ItemDtoIn itemDto = makeItemDto("Вещь", "Хорошее качество", true);
+        ItemDtoOut itemDtoOut = itemService.addNewItem(userDtoOut1.getId(), itemDto);
+        String str1 = "2020-04-08 12:30";
+        String str2 = "2021-04-08 12:30";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime start = LocalDateTime.parse(str1, formatter);
+        LocalDateTime end = LocalDateTime.parse(str2, formatter);
+        BookingDtoIn bookingDto = makeBookingDto(start, end, itemDtoOut.getId());
+        BookingDtoOut bookingDtoOut = bookingService.addNewBooking(userDtoOut2.getId(), bookingDto);
+        assertThat(bookingService.findBookingsByUser(userDtoOut2.getId(), "PAST").getFirst(), equalTo(bookingDtoOut));
+
+    }
+
+    @Test
+    void testBookingsByUserFuture() {
+        UserDtoIn userDto1 = makeUserDto("some@email.com", "Пётр");
+        UserDtoOut userDtoOut1 = userService.saveUser(userDto1);
+        UserDtoIn userDto2 = makeUserDto("new@email.com", "Ваня");
+        UserDtoOut userDtoOut2 = userService.saveUser(userDto2);
+        ItemDtoIn itemDto = makeItemDto("Вещь", "Хорошее качество", true);
+        ItemDtoOut itemDtoOut = itemService.addNewItem(userDtoOut1.getId(), itemDto);
+        String str1 = "2026-04-08 12:30";
+        String str2 = "2027-04-08 12:30";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime start = LocalDateTime.parse(str1, formatter);
+        LocalDateTime end = LocalDateTime.parse(str2, formatter);
+        BookingDtoIn bookingDto = makeBookingDto(start, end, itemDtoOut.getId());
+        BookingDtoOut bookingDtoOut = bookingService.addNewBooking(userDtoOut2.getId(), bookingDto);
+        assertThat(bookingService.findBookingsByUser(userDtoOut2.getId(), "FUTURE").getFirst(), equalTo(bookingDtoOut));
+        assertThat(bookingService.findBookingsByUser(userDtoOut2.getId(), "WAITING").getFirst(), equalTo(bookingDtoOut));
 
     }
 

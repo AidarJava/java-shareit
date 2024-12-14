@@ -23,22 +23,22 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByBookerIdAndStatus(Long userId, Status status, Sort sort);
 
-    @Query("select b from Booking as b where b.booker.id=?1 and b.item in ?2 order by b.start ASC")
+    @Query("select b from Booking as b where b.item.id=?1 and b.item in ?2 order by b.start ASC")
     List<Booking> searchAllBookingsByUserItems(Long userId, List<Item> item);
 
-    @Query("select b from Booking as b where b.booker.id=?1 and b.start < ?2 and b.end > ?2 and b.item in ?3 " +
+    @Query("select b from Booking as b where b.item.id=?1 and b.start < ?2 and b.end > ?2 and b.item in ?3 " +
             "order by b.start ASC ")
     List<Booking> searchAllCurrentBookingsByUserItems(Long userId, LocalDateTime time, List<Item> item);
 
-    @Query("select b from Booking as b where b.booker.id=?1 and b.end < ?2 and b.item in ?3 " +
+    @Query("select b from Booking as b where b.item.id=?1 and b.end < ?2 and b.item in ?3 " +
             "order by b.start ASC ")
     List<Booking> searchAllPastBookingsByUserItems(Long userId, LocalDateTime time, List<Item> item);
 
-    @Query("select b from Booking as b where b.booker.id=?1 and b.start > ?2 and b.item in ?3 " +
+    @Query("select b from Booking as b where b.item.id=?1 and b.start > ?2 and b.item in ?3 " +
             "order by b.start ASC ")
     List<Booking> searchAllFutureBookingsByUserItems(Long userId, LocalDateTime time, List<Item> item);
 
-    @Query("select b from Booking as b where b.booker.id=?1 and b.status > ?2 and b.item in ?3 " +
+    @Query("select b from Booking as b where b.item.id=?1 and b.status > ?2 and b.item in ?3 " +
             "order by b.start ASC ")
     List<Booking> searchAllStatusBookingsByUserItems(Long userId, Status status, List<Item> item);
 
