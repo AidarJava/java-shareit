@@ -1,7 +1,6 @@
 package ru.practicum.shareit.booking;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.item.model.Item;
@@ -21,11 +20,9 @@ public class Booking {
     LocalDateTime start;
     @Column(name = "end_date")
     LocalDateTime end;
-    @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "item_id", nullable = false)
     Item item;
-    @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "booker_id", nullable = false)
     User booker;
