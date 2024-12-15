@@ -70,6 +70,7 @@ public class ShareItMockTests {
         when(itemRepository.findById(itemId)).thenReturn(Optional.empty());
         assertThrows(NotFoundException.class, () -> itemService.searchItemForAnyone(itemId));
     }
+
     @SneakyThrows
     @Test
     void checkUserException() {
