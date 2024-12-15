@@ -25,13 +25,6 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse conflictEmail(final ConflictException e) {
-        log.error("Ошибка 409 {}", e.getMessage(), e);
-        return new ErrorResponse("Ошибка 409 ", e.getMessage());
-    }
-
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse notValidRequest(final NotValidRequestException e) {
         log.error("Ошибка 400 {}", e.getMessage(), e);
@@ -48,7 +41,7 @@ public class ErrorHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     @ResponseStatus(HttpStatus.CONFLICT) // HTTP 409 Conflict
     public ErrorResponse handleDataIntegrityViolationException(DataIntegrityViolationException e) {
-        log.error("Ошибка сохранения данных: {}", e.getMessage(),e);
+        log.error("Ошибка сохранения данных: {}", e.getMessage(), e);
         return new ErrorResponse("Ошибка сохранения данных", e.getMessage());
     }
 }

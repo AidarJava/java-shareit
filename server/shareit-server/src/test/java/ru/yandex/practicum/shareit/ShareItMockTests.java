@@ -7,16 +7,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.booking.Booking;
-import ru.practicum.shareit.booking.BookingRepository;
-import ru.practicum.shareit.booking.BookingServiceImpl;
-import ru.practicum.shareit.booking.Status;
+import ru.practicum.shareit.booking.*;
 import ru.practicum.shareit.booking.dto.BookingDtoIn;
 import ru.practicum.shareit.booking.dto.BookingDtoOut;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.NotValidOwner;
 import ru.practicum.shareit.exception.NotValidRequestException;
+import ru.practicum.shareit.exception.ServerErrorException;
 import ru.practicum.shareit.item.CommentRepository;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.ItemServiceImpl;
@@ -71,6 +69,13 @@ public class ShareItMockTests {
         Long itemId = 1L;
         when(itemRepository.findById(itemId)).thenReturn(Optional.empty());
         assertThrows(NotFoundException.class, () -> itemService.searchItemForAnyone(itemId));
+    }
+    @SneakyThrows
+    @Test
+    void checkUserException() {
+        Long itemId = 1L;
+        when(userRepository.findById(itemId)).thenReturn(Optional.empty());
+        assertThrows(ServerErrorException.class, () -> bookingService.checkUser(itemId));
     }
 
     @Test
