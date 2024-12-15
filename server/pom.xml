@@ -7,10 +7,10 @@
         <groupId>ru.practicum</groupId>
         <artifactId>shareit</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>shareit-server</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
 
     <name>ShareIt Server</name>
 
