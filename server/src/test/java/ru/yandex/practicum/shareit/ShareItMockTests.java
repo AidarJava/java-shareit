@@ -81,41 +81,37 @@ public class ShareItMockTests {
 
     @Test
     void updateItem_shouldUpdateAndSaveItemSuccessfully() {
-        // Исходные данные
         Long userId = 1L;
         Long itemId = 1L;
 
         Item existingItem = new Item();
         existingItem.setId(itemId);
         existingItem.setOwner(userId);
-        existingItem.setName("Old Item");
-        existingItem.setDescription("Old Description");
+        existingItem.setName("Старая вешь");
+        existingItem.setDescription("Старое описание");
         existingItem.setAvailable(true);
 
         ItemDtoIn updatedItemDto = new ItemDtoIn();
-        updatedItemDto.setName("Updated Item");
-        updatedItemDto.setDescription("Updated Description");
+        updatedItemDto.setName("Обновленная вещь");
+        updatedItemDto.setDescription("Обновленное описание");
         updatedItemDto.setAvailable(false);
 
         Item updatedItem = new Item();
         updatedItem.setId(itemId);
         updatedItem.setOwner(userId);
-        updatedItem.setName("Updated Item");
-        updatedItem.setDescription("Updated Description");
+        updatedItem.setName("Обновленная вешь");
+        updatedItem.setDescription("Обновленное описание");
         updatedItem.setAvailable(false);
 
-        // Заглушки для itemRepository
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(existingItem));
         when(itemRepository.save(any(Item.class))).thenReturn(updatedItem);
 
-        // Выполнение метода
         ItemDtoOut result = itemService.updateItem(userId, itemId, updatedItemDto);
 
-        // Проверка результата
         assertNotNull(result);
         assertEquals(itemId, result.getId());
-        assertEquals("Updated Item", result.getName());
-        assertEquals("Updated Description", result.getDescription());
+        assertEquals("Обновленная вещь", result.getName());
+        assertEquals("Обновленное описание", result.getDescription());
         assertFalse(result.getAvailable());
 
         // Проверка вызовов
@@ -125,47 +121,39 @@ public class ShareItMockTests {
 
     @Test
     void updateItem_shouldThrowNotFoundExceptionIfItemDoesNotExist() {
-        // Данные
         Long userId = 1L;
         Long itemId = 1L;
         ItemDtoIn itemDtoIn = new ItemDtoIn();
 
-        // Заглушка для itemRepository
         when(itemRepository.findById(itemId)).thenReturn(Optional.empty());
 
-        // Ожидаемое исключение
         NotFoundException exception = assertThrows(NotFoundException.class, () ->
                 itemService.updateItem(userId, itemId, itemDtoIn));
 
         assertEquals("Такой вещи нет в базе!", exception.getMessage());
 
-        // Проверка вызовов
         verify(itemRepository).findById(itemId);
         verify(itemRepository, never()).save(any(Item.class));
     }
 
     @Test
     void updateItemShouldThrowNotFoundExceptionIfUserIsNotOwner() {
-        // Данные
-        Long userId = 2L; // Другой пользователь
+        Long userId = 2L;
         Long itemId = 1L;
 
         Item existingItem = new Item();
         existingItem.setId(itemId);
-        existingItem.setOwner(1L); // Владелец другой
+        existingItem.setOwner(1L);
 
         ItemDtoIn itemDtoIn = new ItemDtoIn();
 
-        // Заглушка для itemRepository
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(existingItem));
 
-        // Ожидаемое исключение
         NotFoundException exception = assertThrows(NotFoundException.class, () ->
                 itemService.updateItem(userId, itemId, itemDtoIn));
 
         assertEquals("У вас нет прав на внесение изменений!", exception.getMessage());
 
-        // Проверка вызовов
         verify(itemRepository).findById(itemId);
         verify(itemRepository, never()).save(any(Item.class));
     }
@@ -238,7 +226,6 @@ public class ShareItMockTests {
         user.setId(1L);
         user.setEmail("mail@mail.ru");
         user.setName("Ivan");
-
 
         Item item = new Item();
         item.setId(1L);
