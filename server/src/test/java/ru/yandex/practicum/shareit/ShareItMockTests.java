@@ -87,7 +87,7 @@ public class ShareItMockTests {
         Item existingItem = new Item();
         existingItem.setId(itemId);
         existingItem.setOwner(userId);
-        existingItem.setName("Старая вешь");
+        existingItem.setName("Старая вещь");
         existingItem.setDescription("Старое описание");
         existingItem.setAvailable(true);
 
@@ -99,7 +99,7 @@ public class ShareItMockTests {
         Item updatedItem = new Item();
         updatedItem.setId(itemId);
         updatedItem.setOwner(userId);
-        updatedItem.setName("Обновленная вешь");
+        updatedItem.setName("Обновленная вещь");
         updatedItem.setDescription("Обновленное описание");
         updatedItem.setAvailable(false);
 
