@@ -9,7 +9,6 @@ import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import ru.practicum.shareit.ShareItServer;
 import ru.practicum.shareit.item.dto.ItemDtoIn;
 import ru.practicum.shareit.user.dto.UserDtoIn;
@@ -18,7 +17,6 @@ import java.util.Set;
 
 import static org.hibernate.validator.internal.util.Contracts.assertTrue;
 
-@ActiveProfiles("test")
 @SpringBootTest(classes = ShareItServer.class)
 public class ShareItJsonTests {
     @Autowired
