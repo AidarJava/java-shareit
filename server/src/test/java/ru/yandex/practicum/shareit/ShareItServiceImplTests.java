@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.ShareItServer;
 import ru.practicum.shareit.booking.BookingServiceImpl;
@@ -37,11 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @SpringBootTest(
         classes = ShareItServer.class,
-        //properties = "spring.datasource.url=jdbc:postgresql://localhost:5433/shareit",
-        properties = "spring.datasource.url=jdbc:h2:mem:shareit;MODE=PostgreSQL;DB_CLOSE_DELAY=-1",
-        //properties = "spring.config.activate.on-profile=test",
         webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@ActiveProfiles("test")
 public class ShareItServiceImplTests {
     private final EntityManager entityManager;
     private final UserServiceImpl userService;
@@ -104,18 +99,14 @@ public class ShareItServiceImplTests {
     @Test
     void testGetUserItems() {
         UserDtoIn userDto = makeUserDto("some@email.com", "Пётр");
-
         UserDtoOut userDtoOut = userService.saveUser(userDto);
-        TypedQuery<User> query = entityManager.createQuery("Select u from User u where u.email = :email", User.class);
-        User user = query.setParameter("email", userDto.getEmail())
-                .getSingleResult();
-        assertThat(user.getId(), notNullValue());
-        assertThat(user.getName(), equalTo(userDto.getName()));
-        assertThat(user.getEmail(), equalTo(userDto.getEmail()));
+        assertThat(userDtoOut.getId(), notNullValue());
+        assertThat(userDtoOut.getName(), equalTo(userDto.getName()));
+        assertThat(userDtoOut.getEmail(), equalTo(userDto.getEmail()));
         ItemDtoIn itemDto = makeItemDto("Вещь", "Хорошее качество", false);
-        ItemDtoOut itemDtoOut = itemService.addNewItem(user.getId(), itemDto);
+        ItemDtoOut itemDtoOut = itemService.addNewItem(userDtoOut.getId(), itemDto);
         ItemDtoOut item = makeItemDtoOut(itemDtoOut.getId(), userDtoOut.getId(), null, "Вещь", "Хорошее качество", false);
-        List<ItemDtoOut> userItems = itemService.getItems(user.getId());
+        List<ItemDtoOut> userItems = itemService.getItems(userDtoOut.getId());
         assertThat(userItems, notNullValue());
         assertThat(userItems.getFirst(), equalTo(item));
     }
