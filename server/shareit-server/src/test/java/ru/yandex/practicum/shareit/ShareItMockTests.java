@@ -37,7 +37,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class ShareItTests {
+public class ShareItMockTests {
     @Mock
     CommentRepository commentRepository;
     @Mock
