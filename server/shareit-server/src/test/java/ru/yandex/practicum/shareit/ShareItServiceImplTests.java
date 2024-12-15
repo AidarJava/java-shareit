@@ -5,6 +5,8 @@ import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.ShareItServer;
@@ -13,8 +15,7 @@ import ru.practicum.shareit.booking.dto.BookingDtoIn;
 import ru.practicum.shareit.booking.dto.BookingDtoOut;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.ItemServiceImpl;
-import ru.practicum.shareit.item.dto.ItemDtoIn;
-import ru.practicum.shareit.item.dto.ItemDtoOut;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.request.ItemRequestServiceImpl;
 import ru.practicum.shareit.request.dto.ItemRequestDtoIn;
 import ru.practicum.shareit.request.dto.ItemRequestDtoOut;
@@ -29,8 +30,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Transactional
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -59,6 +60,38 @@ public class ShareItServiceImplTests {
         assertThat(user.getId(), notNullValue());
         assertThat(user.getName(), equalTo(userDto.getName()));
         assertThat(user.getEmail(), equalTo(userDto.getEmail()));
+
+    }
+
+    @Test
+    void testUpdateUser() {
+        UserDtoIn userDto = makeUserDto("some@email.com", "Пётр");
+        UserDtoOut userDtoOut = userService.saveUser(userDto);
+        UserDtoIn userDto2 = new UserDtoIn();
+        userDto2.setName("Саша");
+        UserDtoOut userDtoOut1 = userService.updateUser(userDtoOut.getId(), userDto2);
+        TypedQuery<User> query = entityManager.createQuery("Select u from User u where u.name = :name", User.class);
+        User user = query.setParameter("name", userDto2.getName())
+                .getSingleResult();
+        assertThat(user.getId(), notNullValue());
+        assertThat(user.getName(), equalTo(userDto2.getName()));
+        assertThat(user.getEmail(), equalTo(userDto.getEmail()));
+    }
+
+    @Test
+    void testDeleteUser() {
+        UserDtoIn userDto = makeUserDto("some@email.com", "Пётр");
+        UserDtoOut userDtoOut = userService.saveUser(userDto);
+        ResponseEntity<String> response = userService.deleteUserById(userDtoOut.getId());
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
+    }
+
+    @Test
+    void testGetAllUser() {
+        UserDtoIn userDto = makeUserDto("some@email.com", "Пётр");
+        UserDtoOut userDtoOut = userService.saveUser(userDto);
+        List<UserDtoOut> response = userService.getAllUsers();
+        assertEquals(response.getFirst(), userDtoOut);
     }
 
     private UserDtoIn makeUserDto(String email, String name) {
@@ -107,6 +140,54 @@ public class ShareItServiceImplTests {
     }
 
     @Test
+    void searchItemForAnyone() {
+        UserDtoIn userDto = makeUserDto("some@email.com", "Пётр");
+
+        UserDtoOut userDtoOut = userService.saveUser(userDto);
+        TypedQuery<User> query = entityManager.createQuery("Select u from User u where u.email = :email", User.class);
+        User user = query.setParameter("email", userDto.getEmail())
+                .getSingleResult();
+
+        ItemDtoIn itemDto = makeItemDto("Вещь", "Хорошее качество", false);
+        ItemDtoOut itemDtoOut = itemService.addNewItem(user.getId(), itemDto);
+        ItemDtoOut item = makeItemDtoOut(itemDtoOut.getId(), userDtoOut.getId(), null, "Вещь", "Хорошее качество", false);
+
+        ItemDtoOutDate userItem = itemService.searchItemForAnyone(item.getId());
+        assertThat(userItem, notNullValue());
+        assertThat(userItem.getName(), equalTo(item.getName()));
+    }
+
+    @Test
+    void searchItemsText() {
+        UserDtoIn userDto = makeUserDto("some@email.com", "Пётр");
+
+        UserDtoOut userDtoOut = userService.saveUser(userDto);
+
+        ItemDtoIn itemDto = makeItemDto("Вещь", "Хорошее качество", true);
+        ItemDtoOut itemDtoOut = itemService.addNewItem(userDtoOut.getId(), itemDto);
+        ItemDtoOut item = makeItemDtoOut(itemDtoOut.getId(), userDtoOut.getId(), null, "Вещь", "Хорошее качество", false);
+
+        List<ItemDtoOut> userItem = itemService.searchItems(userDtoOut.getId(), "Вещь");
+        assertThat(userItem, notNullValue());
+        assertThat(userItem.getFirst().getDescription(), equalTo(item.getDescription()));
+    }
+
+    @Test
+    void updateItemTest() {
+        UserDtoIn userDto = makeUserDto("some@email.com", "Пётр");
+
+        UserDtoOut userDtoOut = userService.saveUser(userDto);
+
+        ItemDtoIn itemDto = makeItemDto("Вещь", "Хорошее качество", true);
+        ItemDtoOut itemDtoOut = itemService.addNewItem(userDtoOut.getId(), itemDto);
+        ItemDtoIn itemDto2 = new ItemDtoIn();
+        itemDto2.setName("Вешь2");
+        ItemDtoOut updatedItem = itemService.updateItem(userDtoOut.getId(), itemDtoOut.getId(), itemDto2);
+        assertThat(updatedItem, notNullValue());
+        assertThat(updatedItem.getName(), equalTo(itemDto2.getName()));
+    }
+
+    @Test
     void testBookingsByUserAll() {
         UserDtoIn userDto1 = makeUserDto("some@email.com", "Пётр");
         UserDtoOut userDtoOut1 = userService.saveUser(userDto1);
@@ -122,12 +203,7 @@ public class ShareItServiceImplTests {
         BookingDtoIn bookingDto = makeBookingDto(start, end, itemDtoOut.getId());
         BookingDtoOut bookingDtoOut = bookingService.addNewBooking(userDtoOut2.getId(), bookingDto);
         assertThat(bookingService.findBookingsByUser(userDtoOut2.getId(), "ALL").getFirst(), equalTo(bookingDtoOut));
-        System.out.println(userDtoOut1.getId());
-        System.out.println(itemDtoOut);
-        System.out.println(bookingDtoOut);
-        System.out.println(itemRepository.findAllByOwner(userDtoOut1.getId()));
-        System.out.println(bookingService.findBookingItemsByUser(userDtoOut1.getId(), "ALL"));
-        //assertThat(bookingService.findBookingItemsByUser(userDtoOut1.getId(), "ALL").getFirst(), equalTo(bookingDtoOut));
+        assertThat(bookingService.findBookingItemsByUser(userDtoOut2.getId(), "ALL"), empty());
     }
 
     @Test
@@ -146,7 +222,7 @@ public class ShareItServiceImplTests {
         BookingDtoIn bookingDto = makeBookingDto(start, end, itemDtoOut.getId());
         BookingDtoOut bookingDtoOut = bookingService.addNewBooking(userDtoOut2.getId(), bookingDto);
         assertThat(bookingService.findBookingsByUser(userDtoOut2.getId(), "CURRENT").getFirst(), equalTo(bookingDtoOut));
-
+        assertThat(bookingService.findBookingItemsByUser(userDtoOut2.getId(), "CURRENT"), empty());
     }
 
     @Test
@@ -165,7 +241,7 @@ public class ShareItServiceImplTests {
         BookingDtoIn bookingDto = makeBookingDto(start, end, itemDtoOut.getId());
         BookingDtoOut bookingDtoOut = bookingService.addNewBooking(userDtoOut2.getId(), bookingDto);
         assertThat(bookingService.findBookingsByUser(userDtoOut2.getId(), "PAST").getFirst(), equalTo(bookingDtoOut));
-
+        assertThat(bookingService.findBookingItemsByUser(userDtoOut2.getId(), "PAST"), empty());
     }
 
     @Test
@@ -185,7 +261,10 @@ public class ShareItServiceImplTests {
         BookingDtoOut bookingDtoOut = bookingService.addNewBooking(userDtoOut2.getId(), bookingDto);
         assertThat(bookingService.findBookingsByUser(userDtoOut2.getId(), "FUTURE").getFirst(), equalTo(bookingDtoOut));
         assertThat(bookingService.findBookingsByUser(userDtoOut2.getId(), "WAITING").getFirst(), equalTo(bookingDtoOut));
-
+        assertThat(bookingService.findBookingsByUser(userDtoOut2.getId(), "REJECTED"), empty());
+        assertThat(bookingService.findBookingItemsByUser(userDtoOut2.getId(), "FUTURE"), empty());
+        assertThat(bookingService.findBookingItemsByUser(userDtoOut2.getId(), "WAITING"), empty());
+        assertThat(bookingService.findBookingItemsByUser(userDtoOut2.getId(), "REJECTED"), empty());
     }
 
     private BookingDtoIn makeBookingDto(LocalDateTime start, LocalDateTime end, Long itemId) {
@@ -203,6 +282,8 @@ public class ShareItServiceImplTests {
         ItemRequestDtoIn itemRequestDtoIn = makeItemRequestDto("Нужна хорошая вещь");
         ItemRequestDtoOut itemDtoOut = itemRequestService.addNewRequest(userDtoOut1.getId(), itemRequestDtoIn);
         assertThat(itemRequestService.getAllYourselfRequests(userDtoOut1.getId()).getFirst(), equalTo(itemDtoOut));
+        assertThat(itemRequestService.getAll().getFirst(), equalTo(itemDtoOut));
+        assertThat(itemRequestService.getRequestById(itemDtoOut.getId()), equalTo(itemDtoOut));
 
     }
 
@@ -213,4 +294,28 @@ public class ShareItServiceImplTests {
         return dto;
     }
 
+    @Test
+    void testAddNewComments() {
+        UserDtoIn userDto1 = makeUserDto("some@email.com", "Пётр");
+        UserDtoOut userDtoOut1 = userService.saveUser(userDto1);
+        UserDtoIn userDto2 = makeUserDto("new@email.com", "Ваня");
+        UserDtoOut userDtoOut2 = userService.saveUser(userDto2);
+        ItemDtoIn itemDto = makeItemDto("Вещь", "Хорошее качество", true);
+        ItemDtoOut itemDtoOut = itemService.addNewItem(userDtoOut1.getId(), itemDto);
+        String str1 = "2020-04-08 12:30";
+        String str2 = "2021-04-08 12:30";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime start = LocalDateTime.parse(str1, formatter);
+        LocalDateTime end = LocalDateTime.parse(str2, formatter);
+        BookingDtoIn bookingDto = makeBookingDto(start, end, itemDtoOut.getId());
+        BookingDtoOut bookingDtoOut = bookingService.addNewBooking(userDtoOut2.getId(), bookingDto);
+        CommentDtoIn commentDtoIn = new CommentDtoIn();
+        commentDtoIn.setText("Помогло");
+        CommentDtoOut commentDtoOut = itemService.addNewComments(userDtoOut2.getId(), itemDtoOut.getId(), commentDtoIn);
+        List<CommentDtoOut> commentByItem = itemService.getCommentsByItemId(itemDtoOut.getId());
+        List<CommentDtoOut> allComment = itemService.getComments(userDtoOut1.getId());
+        assertEquals(commentDtoOut.getText(), "Помогло");
+        assertEquals(commentByItem.getFirst().getItem().getId(), itemDtoOut.getId());
+        assertEquals(allComment.getFirst().getItem().getId(), itemDtoOut.getId());
+    }
 }

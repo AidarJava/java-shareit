@@ -139,7 +139,7 @@ public class ShareItTests {
     }
 
     @Test
-    void updateItem_shouldThrowNotFoundExceptionIfUserIsNotOwner() {
+    void updateItemShouldThrowNotFoundExceptionIfUserIsNotOwner() {
         // Данные
         Long userId = 2L; // Другой пользователь
         Long itemId = 1L;
