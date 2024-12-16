@@ -1,6 +1,7 @@
 package ru.practicum.shareit.controllers.itemRequest;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -16,8 +17,8 @@ import java.util.List;
 public class ItemRequestGatewayController {
     private final WebClient webClient;
 
-    public ItemRequestGatewayController(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.baseUrl("http://localhost:9090")
+    public ItemRequestGatewayController(WebClient.Builder webClientBuilder, @Value("${shareit-server.url}") String serverUrl) {
+        this.webClient = webClientBuilder.baseUrl(serverUrl)
                 .filter((request, next) -> next.exchange(request)
                         .flatMap(response -> {
                             if (response.statusCode().isError()) {

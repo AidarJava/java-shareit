@@ -3,12 +3,14 @@ package ru.practicum.shareit.controllers.item;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
-import ru.practicum.shareit.controllers.item.dto.*;
+import ru.practicum.shareit.controllers.item.dto.CommentDtoIn;
+import ru.practicum.shareit.controllers.item.dto.ItemDtoIn;
 
 import java.util.List;
 
@@ -18,8 +20,8 @@ import java.util.List;
 public class ItemGatewayController {
     private final WebClient webClient;
 
-    public ItemGatewayController(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.baseUrl("http://localhost:9090")
+    public ItemGatewayController(WebClient.Builder webClientBuilder, @Value("${shareit-server.url}") String serverUrl) {
+        this.webClient = webClientBuilder.baseUrl(serverUrl)
                 .filter((request, next) -> next.exchange(request)
                         .flatMap(response -> {
                             if (response.statusCode().isError()) {
