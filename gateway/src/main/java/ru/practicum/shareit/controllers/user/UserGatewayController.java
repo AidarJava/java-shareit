@@ -20,7 +20,7 @@ import java.util.List;
 public class UserGatewayController {
     private final WebClient webClient;
 
-    public UserGatewayController(WebClient.Builder webClientBuilder, @Value ("${shareit-server.url}") String serverUrl) {
+    public UserGatewayController(WebClient.Builder webClientBuilder, @Value("${shareit-server.url}") String serverUrl) {
         this.webClient = webClientBuilder.baseUrl(serverUrl)
                 .filter((request, next) -> next.exchange(request)
                         .flatMap(response -> {
@@ -62,7 +62,7 @@ public class UserGatewayController {
 
     @PatchMapping("/{userId}")
     public Mono<ResponseEntity<UserDtoOut>> updateUser(@Positive @PathVariable("userId") Long userId,
-                                             @RequestBody UserDtoIn userDtoIn) {
+                                                       @RequestBody UserDtoIn userDtoIn) {
         log.info("PATCH/ Проверка параметров запроса метода updateUser, userId - {}, userDtoIn - {} ", userId, userDtoIn);
         return webClient.patch()
                 .uri(uriBuilder -> uriBuilder.path("/users/{userId}").build(userId))

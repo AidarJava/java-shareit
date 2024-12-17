@@ -45,7 +45,7 @@ public class ItemGatewayController {
 
     @GetMapping("/search")
     public Mono<ResponseEntity<List<ItemDtoOut>>> searchPrivate(@Positive @RequestHeader("X-Sharer-User-Id") Long userId,
-                                                      @RequestParam(name = "text") String text) {
+                                                                @RequestParam(name = "text") String text) {
         log.info("GET/ Проверка параметров запроса метода searchPrivate, userId - {} text - {} ", userId, text);
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder.path("/items/search")
@@ -65,8 +65,8 @@ public class ItemGatewayController {
     }
 
     @PostMapping
-    public Mono<ResponseEntity<ItemDtoOut>>add(@Positive @RequestHeader(value = "X-Sharer-User-Id") Long userId,
-                                      @Valid @RequestBody ItemDtoIn itemDtoIn) {
+    public Mono<ResponseEntity<ItemDtoOut>> add(@Positive @RequestHeader(value = "X-Sharer-User-Id") Long userId,
+                                                @Valid @RequestBody ItemDtoIn itemDtoIn) {
         log.info("POST/ Проверка параметров запроса метода add, userId - {} ItemDtoIn - {} ", userId, itemDtoIn);
         return webClient.post()
                 .uri("/items")
@@ -77,8 +77,8 @@ public class ItemGatewayController {
 
     @PatchMapping("/{itemId}")
     public Mono<ResponseEntity<ItemDtoOut>> update(@Positive @RequestHeader("X-Sharer-User-Id") Long userId,
-                                         @Positive @PathVariable(name = "itemId") Long itemId,
-                                         @RequestBody ItemDtoIn itemDtoIn) {
+                                                   @Positive @PathVariable(name = "itemId") Long itemId,
+                                                   @RequestBody ItemDtoIn itemDtoIn) {
         log.info("PATCH/ Проверка параметров запроса метода update, userId - {}, itemId - {},ItemDtoId - {}", userId, itemId, itemDtoIn);
         return webClient.patch()
                 .uri(uriBuilder -> uriBuilder.path("/items/{itemId}").build(itemId))
@@ -89,9 +89,9 @@ public class ItemGatewayController {
 
     @DeleteMapping("/{itemId}")
     public Mono<ResponseEntity<Void>> deleteItem(@Positive @RequestHeader("X-Sharer-User-Id") Long userId,
-                           @Positive @PathVariable(name = "itemId") Long itemId) {
+                                                 @Positive @PathVariable(name = "itemId") Long itemId) {
         log.info("DELETE/ Проверка параметров запроса метода deleteItem, userId - {}, itemId - {} ", userId, itemId);
-       return webClient.delete()
+        return webClient.delete()
                 .uri(uriBuilder -> uriBuilder.path("/items/{itemId}").build(itemId))
                 .header("X-Sharer-User-Id", userId.toString())
                 .exchangeToMono(response -> response.toEntity(Void.class));

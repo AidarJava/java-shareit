@@ -35,7 +35,7 @@ public class ItemRequestGatewayController {
 
     @PostMapping
     public Mono<ResponseEntity<ItemRequestDtoOut>> addNewRequest(@RequestHeader("X-Sharer-User-Id") Long id,
-                                                @RequestBody ItemRequestDtoIn req) {
+                                                                 @RequestBody ItemRequestDtoIn req) {
         log.info("POST/ Проверка параметров запроса метода addNewRequest, ItemRequestDtoIn - {}", req);
         return webClient.post()
                 .uri("/requests")
@@ -64,7 +64,7 @@ public class ItemRequestGatewayController {
 
     @GetMapping("/{requestId}")
     public Mono<ResponseEntity<ItemRequestDtoOut>> getRequestById(@RequestHeader("X-Sharer-User-Id") Long id,
-                                                 @PathVariable Long requestId) {
+                                                                  @PathVariable Long requestId) {
         log.info("GET/ Проверка параметров запроса метода getRequestById, requestId - {}", requestId);
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder.path("/requests/{requestId}").build(requestId))

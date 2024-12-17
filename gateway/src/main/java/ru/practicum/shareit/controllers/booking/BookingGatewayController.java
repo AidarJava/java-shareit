@@ -37,7 +37,7 @@ public class BookingGatewayController {
 
     @PostMapping
     public Mono<ResponseEntity<BookingDtoOut>> addNewBooking(@Positive @RequestHeader("X-Sharer-User-Id") Long userId,
-                                                @Valid @RequestBody BookingDtoIn bookingDtoIn) {
+                                                             @Valid @RequestBody BookingDtoIn bookingDtoIn) {
         log.info("POST/ Проверка параметров запроса метода addNewBooking, userId - {}", userId);
         return webClient.post()
                 .uri("/bookings")
@@ -48,8 +48,8 @@ public class BookingGatewayController {
 
     @PatchMapping("/{bookingId}")
     Mono<ResponseEntity<BookingDtoOut>> bookingConformation(@Positive @RequestHeader("X-Sharer-User-Id") Long userId,
-                                               @Positive @PathVariable(name = "bookingId") Long bookingId,
-                                               @RequestParam(name = "approved") boolean approve) {
+                                                            @Positive @PathVariable(name = "bookingId") Long bookingId,
+                                                            @RequestParam(name = "approved") boolean approve) {
         log.info("PATCH/ Проверка параметров запроса метода bookingConformation, userId - {}, bookingId - {}, approve - {} ", userId, bookingId, approve);
         return webClient.patch()
                 .uri(uriBuilder -> uriBuilder.path("/bookings/{bookingId}")
@@ -60,7 +60,7 @@ public class BookingGatewayController {
 
     @GetMapping("/{bookingId}")
     Mono<ResponseEntity<BookingDtoOut>> checkBookingStatus(@Positive @RequestHeader("X-Sharer-User-Id") Long userId,
-                                              @Positive @PathVariable(name = "bookingId") Long bookingId) {
+                                                           @Positive @PathVariable(name = "bookingId") Long bookingId) {
         log.info("GET/ Проверка параметров запроса метода checkBookingStatus, userId - {}, bookingId) - {}", userId, bookingId);
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder.path("/bookings/{bookingId}").build(bookingId))
@@ -70,7 +70,7 @@ public class BookingGatewayController {
 
     @GetMapping
     Mono<ResponseEntity<List<BookingDtoOut>>> findBookingsByUser(@Positive @RequestHeader("X-Sharer-User-Id") Long userId,
-                                                    @RequestParam(name = "state", required = false, defaultValue = "ALL") String state) {
+                                                                 @RequestParam(name = "state", required = false, defaultValue = "ALL") String state) {
         log.info("POST/ Проверка параметров запроса метода findBookingsByUser, userId - {},state - {}", userId, state);
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder.path("/bookings")
