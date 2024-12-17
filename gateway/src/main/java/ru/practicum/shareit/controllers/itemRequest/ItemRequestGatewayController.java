@@ -8,6 +8,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 import ru.practicum.shareit.controllers.itemRequest.dto.ItemRequestDtoIn;
+import ru.practicum.shareit.controllers.itemRequest.dto.ItemRequestDtoOut;
 
 import java.util.List;
 
@@ -33,45 +34,41 @@ public class ItemRequestGatewayController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> addNewRequest(@RequestHeader("X-Sharer-User-Id") Long id,
+    public Mono<ResponseEntity<ItemRequestDtoOut>> addNewRequest(@RequestHeader("X-Sharer-User-Id") Long id,
                                                 @RequestBody ItemRequestDtoIn req) {
         log.info("POST/ Проверка параметров запроса метода addNewRequest, ItemRequestDtoIn - {}", req);
         return webClient.post()
                 .uri("/requests")
                 .header("X-Sharer-User-Id", id.toString())
                 .bodyValue(req)
-                .exchangeToMono(response -> response.toEntity(Object.class))
-                .block();
+                .exchangeToMono(response -> response.toEntity(ItemRequestDtoOut.class));
     }
 
     @GetMapping
-    public ResponseEntity<List<Object>> getAllYourselfRequests(@RequestHeader("X-Sharer-User-Id") Long id) {
+    public Mono<ResponseEntity<List<ItemRequestDtoOut>>> getAllYourselfRequests(@RequestHeader("X-Sharer-User-Id") Long id) {
         log.info("GET/ Проверка вызова метода getAllYourselfRequests");
         return webClient.get()
                 .uri("/requests")
                 .header("X-Sharer-User-Id", id.toString())
-                .exchangeToMono(response -> response.toEntityList(Object.class))
-                .block();
+                .exchangeToMono(response -> response.toEntityList(ItemRequestDtoOut.class));
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Object>> getAll(@RequestHeader("X-Sharer-User-Id") Long id) {
+    public Mono<ResponseEntity<List<ItemRequestDtoOut>>> getAll(@RequestHeader("X-Sharer-User-Id") Long id) {
         log.info("GET/ Проверка вызова метода getAll");
         return webClient.get()
                 .uri("/requests/all")
                 .header("X-Sharer-User-Id", id.toString())
-                .exchangeToMono(response -> response.toEntityList(Object.class))
-                .block();
+                .exchangeToMono(response -> response.toEntityList(ItemRequestDtoOut.class));
     }
 
     @GetMapping("/{requestId}")
-    public ResponseEntity<Object> getRequestById(@RequestHeader("X-Sharer-User-Id") Long id,
+    public Mono<ResponseEntity<ItemRequestDtoOut>> getRequestById(@RequestHeader("X-Sharer-User-Id") Long id,
                                                  @PathVariable Long requestId) {
         log.info("GET/ Проверка параметров запроса метода getRequestById, requestId - {}", requestId);
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder.path("/requests/{requestId}").build(requestId))
                 .header("X-Sharer-User-Id", id.toString())
-                .exchangeToMono(response -> response.toEntity(Object.class))
-                .block();
+                .exchangeToMono(response -> response.toEntity(ItemRequestDtoOut.class));
     }
 }

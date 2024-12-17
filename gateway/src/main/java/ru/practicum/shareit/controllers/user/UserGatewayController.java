@@ -10,6 +10,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 import ru.practicum.shareit.controllers.user.dto.UserDtoIn;
+import ru.practicum.shareit.controllers.user.dto.UserDtoOut;
 
 import java.util.List;
 
@@ -35,50 +36,45 @@ public class UserGatewayController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Object>> getAllUsers() {
+    public Mono<ResponseEntity<List<UserDtoOut>>> getAllUsers() {
         log.info("GET/ Проверка запроса метода getAllUsers");
         return webClient.get()
                 .uri("/users")
-                .exchangeToMono(response -> response.toEntityList(Object.class))
-                .block();
+                .exchangeToMono(response -> response.toEntityList(UserDtoOut.class));
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<Object> getUserById(@Positive @PathVariable("userId") Long userId) {
+    public Mono<ResponseEntity<UserDtoOut>> getUserById(@Positive @PathVariable("userId") Long userId) {
         log.info("GET/ Проверка параметров запроса метода getUserById, userId - {}", userId);
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder.path("/users/{userId}").build(userId))
-                .exchangeToMono(response -> response.toEntity(Object.class))
-                .block();
+                .exchangeToMono(response -> response.toEntity(UserDtoOut.class));
     }
 
     @PostMapping
-    public ResponseEntity<Object> saveUser(@Valid @RequestBody UserDtoIn userDtoIn) {
+    public Mono<ResponseEntity<UserDtoOut>> saveUser(@Valid @RequestBody UserDtoIn userDtoIn) {
         log.info("POST/ Проверка параметров запроса метода saveUser, userDtoIn - {}", userDtoIn);
         return webClient.post()
                 .uri("/users")
                 .bodyValue(userDtoIn)
-                .exchangeToMono(response -> response.toEntity(Object.class))
-                .block();
+                .exchangeToMono(response -> response.toEntity(UserDtoOut.class));
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity<Object> updateUser(@Positive @PathVariable("userId") Long userId,
+    public Mono<ResponseEntity<UserDtoOut>> updateUser(@Positive @PathVariable("userId") Long userId,
                                              @RequestBody UserDtoIn userDtoIn) {
         log.info("PATCH/ Проверка параметров запроса метода updateUser, userId - {}, userDtoIn - {} ", userId, userDtoIn);
         return webClient.patch()
                 .uri(uriBuilder -> uriBuilder.path("/users/{userId}").build(userId))
                 .bodyValue(userDtoIn)
-                .exchangeToMono(response -> response.toEntity(Object.class))
-                .block();
+                .exchangeToMono(response -> response.toEntity(UserDtoOut.class));
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<String> deleteUserById(@Positive @PathVariable("userId") Long userId) {
+    public Mono<ResponseEntity<String>> deleteUserById(@Positive @PathVariable("userId") Long userId) {
         log.info("DELETE/ Проверка параметров запроса метода deleteUserById, userId - {}", userId);
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder.path("/users/{userId}").build(userId))
-                .exchangeToMono(response -> response.toEntity(String.class))
-                .block();
+                .exchangeToMono(response -> response.toEntity(String.class));
     }
 }

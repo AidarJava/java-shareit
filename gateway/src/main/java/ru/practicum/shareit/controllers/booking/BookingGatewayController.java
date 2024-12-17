@@ -10,6 +10,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 import ru.practicum.shareit.controllers.booking.dto.BookingDtoIn;
+import ru.practicum.shareit.controllers.booking.dto.BookingDtoOut;
 
 import java.util.List;
 
@@ -35,19 +36,18 @@ public class BookingGatewayController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> addNewBooking(@Positive @RequestHeader("X-Sharer-User-Id") Long userId,
+    public Mono<ResponseEntity<BookingDtoOut>> addNewBooking(@Positive @RequestHeader("X-Sharer-User-Id") Long userId,
                                                 @Valid @RequestBody BookingDtoIn bookingDtoIn) {
         log.info("POST/ Проверка параметров запроса метода addNewBooking, userId - {}", userId);
         return webClient.post()
                 .uri("/bookings")
                 .header("X-Sharer-User-Id", userId.toString())
                 .bodyValue(bookingDtoIn)
-                .exchangeToMono(response -> response.toEntity(Object.class))
-                .block();
+                .exchangeToMono(response -> response.toEntity(BookingDtoOut.class));
     }
 
     @PatchMapping("/{bookingId}")
-    ResponseEntity<Object> bookingConformation(@Positive @RequestHeader("X-Sharer-User-Id") Long userId,
+    Mono<ResponseEntity<BookingDtoOut>> bookingConformation(@Positive @RequestHeader("X-Sharer-User-Id") Long userId,
                                                @Positive @PathVariable(name = "bookingId") Long bookingId,
                                                @RequestParam(name = "approved") boolean approve) {
         log.info("PATCH/ Проверка параметров запроса метода bookingConformation, userId - {}, bookingId - {}, approve - {} ", userId, bookingId, approve);
@@ -55,42 +55,38 @@ public class BookingGatewayController {
                 .uri(uriBuilder -> uriBuilder.path("/bookings/{bookingId}")
                         .queryParam("approved", approve).build(bookingId))
                 .header("X-Sharer-User-Id", userId.toString())
-                .exchangeToMono(response -> response.toEntity(Object.class))
-                .block();
+                .exchangeToMono(response -> response.toEntity(BookingDtoOut.class));
     }
 
     @GetMapping("/{bookingId}")
-    ResponseEntity<Object> checkBookingStatus(@Positive @RequestHeader("X-Sharer-User-Id") Long userId,
+    Mono<ResponseEntity<BookingDtoOut>> checkBookingStatus(@Positive @RequestHeader("X-Sharer-User-Id") Long userId,
                                               @Positive @PathVariable(name = "bookingId") Long bookingId) {
         log.info("GET/ Проверка параметров запроса метода checkBookingStatus, userId - {}, bookingId) - {}", userId, bookingId);
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder.path("/bookings/{bookingId}").build(bookingId))
                 .header("X-Sharer-User-Id", userId.toString())
-                .exchangeToMono(response -> response.toEntity(Object.class))
-                .block();
+                .exchangeToMono(response -> response.toEntity(BookingDtoOut.class));
     }
 
     @GetMapping
-    ResponseEntity<List<Object>> findBookingsByUser(@Positive @RequestHeader("X-Sharer-User-Id") Long userId,
+    Mono<ResponseEntity<List<BookingDtoOut>>> findBookingsByUser(@Positive @RequestHeader("X-Sharer-User-Id") Long userId,
                                                     @RequestParam(name = "state", required = false, defaultValue = "ALL") String state) {
         log.info("POST/ Проверка параметров запроса метода findBookingsByUser, userId - {},state - {}", userId, state);
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder.path("/bookings")
                         .queryParam("state", state).build())
                 .header("X-Sharer-User-Id", userId.toString())
-                .exchangeToMono(response -> response.toEntityList(Object.class))
-                .block();
+                .exchangeToMono(response -> response.toEntityList(BookingDtoOut.class));
     }
 
     @GetMapping("/owner")
-    ResponseEntity<List<Object>> findBookingItemsByUser(@Positive @RequestHeader("X-Sharer-User-Id") Long userId,
-                                                        @RequestParam(name = "state", required = false, defaultValue = "ALL") String state) {
+    Mono<ResponseEntity<List<BookingDtoOut>>> findBookingItemsByUser(@Positive @RequestHeader("X-Sharer-User-Id") Long userId,
+                                                                     @RequestParam(name = "state", required = false, defaultValue = "ALL") String state) {
         log.info("POST/ Проверка параметров запроса метода findBookingItemsByUser, userId - {},state - {}", userId, state);
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder.path("/bookings/owner")
                         .queryParam("state", state).build())
                 .header("X-Sharer-User-Id", userId.toString())
-                .exchangeToMono(response -> response.toEntityList(Object.class))
-                .block();
+                .exchangeToMono(response -> response.toEntityList(BookingDtoOut.class));
     }
 }
